@@ -286,16 +286,16 @@ class tree
         if (min_point.y <= y0 && y0 <= max_point.y && min_point.z <= z0 && z0 <= max_point.z) return 1;
         x0 = (min_point.y - start.y) / (middle.y - start.y) * (middle.x - start.x) + start.x;
         z0 = (min_point.y - start.y) / (middle.y - start.y) * (middle.z - start.z) + start.z;
-        if (min_point.y <= x0 && x0 <= max_point.y && min_point.z <= z0 && z0 <= max_point.z) return 1;
+        if (min_point.x <= x0 && x0 <= max_point.x && min_point.z <= z0 && z0 <= max_point.z) return 1;
         x0 = (max_point.y - start.y) / (middle.y - start.y) * (middle.x - start.x) + start.x;
         z0 = (max_point.y - start.y) / (middle.y - start.y) * (middle.z - start.z) + start.z;
-        if (min_point.y <= x0 && x0 <= max_point.y && min_point.z <= z0 && z0 <= max_point.z) return 1;
+        if (min_point.x <= x0 && x0 <= max_point.x && min_point.z <= z0 && z0 <= max_point.z) return 1;
         x0 = (min_point.z - start.z) / (middle.z - start.z) * (middle.x - start.x) + start.x;
-        z0 = (min_point.z - start.z) / (middle.z - start.z) * (middle.y - start.y) + start.y;
-        if (min_point.y <= y0 && y0 <= max_point.y && min_point.z <= z0 && z0 <= max_point.z) return 1;
+        y0 = (min_point.z - start.z) / (middle.z - start.z) * (middle.y - start.y) + start.y;
+        if (min_point.x <= x0 && x0 <= max_point.x && min_point.y <= y0 && y0 <= max_point.y) return 1;
         x0 = (max_point.z - start.z) / (middle.z - start.z) * (middle.x - start.x) + start.x;
-        z0 = (max_point.z - start.z) / (middle.z - start.z) * (middle.y - start.y) + start.y;
-        if (min_point.y <= y0 && y0 <= max_point.y && min_point.z <= z0 && z0 <= max_point.z) return 1;
+        y0 = (max_point.z - start.z) / (middle.z - start.z) * (middle.y - start.y) + start.y;
+        if (min_point.x <= x0 && x0 <= max_point.x && min_point.y <= y0 && y0 <= max_point.y) return 1;
         return 0;
     }
     std::optional<triangle> intersect(node *now, point start, point middle)
