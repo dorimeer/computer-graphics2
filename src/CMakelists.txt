@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(files main.cpp)
+set(files main.cpp point.cpp triangle.cpp file_representation.cpp tree.cpp)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
