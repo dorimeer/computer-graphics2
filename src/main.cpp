@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     auto end = high_resolution_clock::now();
     std::cout << "ray tracing itself took " << duration_cast<milliseconds>(end - read_end).count() << "ms\n";
 
-    save_to_file(image, "output.bmp");
+    save_to_file(image, output);
 
     auto total_end = high_resolution_clock::now();
     std::cout << "write to file took " << duration_cast<milliseconds>(total_end - end).count() << "ms\n";
