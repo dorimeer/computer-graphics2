@@ -41,7 +41,7 @@ std::pair<point, point> tree::unite(node *now, triangle trik)
 {
     using std::max;
     using std::min;
-    if (!now) return {point{1e10, 1e10, 1e10}, {-1e10, -1e10, -1e10}};
+    if (!now) return {point{-1e10, -1e10, -1e10}, {1e10, 1e10, 1e10}};
     auto min_trik = trik.min();
     auto max_trik = trik.max();
     return {{min(min_trik.x, now->min.x), min(min_trik.y, now->min.y), min(min_trik.y, now->min.y)},
@@ -50,7 +50,7 @@ std::pair<point, point> tree::unite(node *now, triangle trik)
 
 std::pair<double, double> tree::get_unite_param(node *first, node *second, node *rest)
 {
-    auto bounding_size = std::max(first->max, second->max) - std::min(first->max, second->max);
+    auto bounding_size = std::max(first->max, second->max) - std::min(first->min, second->min);
     auto rest_size = rest->max - rest->min;
     return {bounding_size.x * bounding_size.y * bounding_size.z + rest_size.x * rest_size.y * rest_size.z,
             bounding_size.x + bounding_size.y + bounding_size.z + rest_size.x + rest_size.y + rest_size.z};
@@ -77,10 +77,12 @@ std::unique_ptr<tree::node> tree::insert(node *now, triangle new_elem)
 
     // take best child for insert
     bool take_left = true;
-    if (left.x * left.y * left.z < right.x * right.y * right.z) take_left = false;
     if (std::fabs(left.x * left.y * left.z - right.x * right.y * right.z) < eps &&
         right.x + right.y + right.z < left.x + left.y + left.z)
-        take_left = 0;
+        take_left = false;
+    else if (left.x * left.y * left.z > right.x * right.y * right.z)
+        take_left = false;
+
     std::unique_ptr<node> new_child;
     if (take_left)
         new_child = insert(now->left.get(), new_elem);
@@ -89,7 +91,7 @@ std::unique_ptr<tree::node> tree::insert(node *now, triangle new_elem)
 
     // if childs is balanced
     if (!new_child) return nullptr;
-    
+
     if (!now->right)
     {
         now->right = std::move(new_child);
@@ -101,10 +103,9 @@ std::unique_ptr<tree::node> tree::insert(node *now, triangle new_elem)
     auto rest_new = get_unite_param(now->left.get(), now->right.get(), new_child.get());
     auto rest_left = get_unite_param(now->right.get(), new_child.get(), now->left.get());
     auto rest_right = get_unite_param(now->left.get(), new_child.get(), now->right.get());
-    if (first_more(rest_left, rest_new) && first_more(rest_left, rest_right))
-        std::swap(now->left, new_child);
-    else if (first_more(rest_right, rest_new) && first_more(rest_right, rest_left))
-        std::swap(now->left, new_child);
+
+    if (rest_left < rest_right && rest_left < rest_new) std::swap(now->left, new_child);
+    if (rest_right < rest_left && rest_right < rest_new) std::swap(now->right, new_child);
 
     now->min = std::min(now->left->min, now->right->min);
     now->max = std::max(now->left->max, now->right->max);
@@ -152,7 +153,6 @@ bool tree::intersect(point min_point, point max_point, point start, point middle
 
 std::optional<triangle> tree::intersect(node *now, point start, point middle)
 {
-    // std::cout << now << '\n';
     if (!now) return std::nullopt;
     if (!intersect(now->min, now->max, start, middle)) return std::nullopt;
     if (!now->left) return now->value;
@@ -200,7 +200,7 @@ void tree::insert(triangle new_elem)
 
     // if no need rebalance
     if (!temp) return;
-
+    
     // update root
     auto new_root = std::make_unique<node>(std::move(temp));
     new_root->min = std::min(new_root->min, root->min);
