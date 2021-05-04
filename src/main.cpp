@@ -58,7 +58,12 @@ int main(int argc, char *argv[])
         if (line == "f")
         {
             size_t ver1, ver2, ver3;
-            fin >> ver1 >> c >> c >> ver2 >> ver2 >> c >> c >> ver3 >> ver3 >> line;
+            fin >> ver1;
+            fin.ignore(1000, ' ');
+            fin >> ver2;
+            fin.ignore(1000, ' ');
+            fin >> ver3;
+            fin.ignore(1000, '\n');
             tr.insert({{vertexes[ver1 - 1], vertexes[ver2 - 1], vertexes[ver3 - 1]}});
         }
     }
