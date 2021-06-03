@@ -30,6 +30,21 @@ point operator*(point lhs, double rhs)
     return {lhs.x * rhs, lhs.y * rhs, lhs.z * rhs};
 }
 
+point operator*(point lhs, point rhs)
+{
+    return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z};
+}
+
+point operator/(point lhs, double rhs)
+{
+    return {lhs.x / rhs, lhs.y / rhs, lhs.z / rhs};
+}
+
+point operator/(point lhs, point rhs)
+{
+    return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z};
+}
+
 point cross_product(point lhs, point rhs)
 {
     return {lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x};

@@ -51,7 +51,7 @@ class tree
     std::optional<triangle> intersect(node *now, point start, point middle);
 
   public:
-    double intersect(point start, point middle, point light);
+    double intersect(point camera, point plane_point, point light);
     void insert(triangle new_elem);
     void show();
 };

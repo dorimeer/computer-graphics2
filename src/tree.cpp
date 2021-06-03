@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <iostream>
-
 #include <constants.h>
 
 point get_point_intersect(triangle trik, point start, point middle)
@@ -36,6 +35,45 @@ std::pair<double, double> intersect(triangle trik, point start, point middle)
             std::fabs(prod1) / (std::hypot(plane_normal.x, plane_normal.y, plane_normal.z) *
                                 std::hypot(ray_normal.x, ray_normal.y, ray_normal.z))};
 }
+
+
+double computeBarycentricColor(triangle tr, point intersection, point light)
+{
+    point light_ray_vec = intersection - light;
+    light_ray_vec = light_ray_vec / std::hypot(light_ray_vec.x, light_ray_vec.y, light_ray_vec.z);
+
+    point A = tr.vertexes[0];
+    point B = tr.vertexes[1];
+    point C = tr.vertexes[2];
+    point P = intersection;
+
+    point vnA = tr.vertexes_normals[0];
+    point vnB = tr.vertexes_normals[1];
+    point vnC = tr.vertexes_normals[2];
+
+//    vnA = vnA / std::hypot(vnA.x, vnA.y, vnA.z);
+//    vnB = vnB / std::hypot(vnB.x, vnB.y, vnB.z);
+//    vnC = vnC / std::hypot(vnC.x, vnC.y, vnC.z);
+
+//    triangle tPAB = {P, A, B};
+    triangle tPBC = {P, B, C};
+    triangle tPCA = {P, C, A};
+
+    double areaABC = area(tr);
+//    double areaPAB = area(tPAB);
+    double areaPBC = area(tPBC);
+    double areaPCA = area(tPCA);
+
+    double bary_vnA = areaPBC / areaABC;
+    double bary_vnB = areaPCA / areaABC;
+//    double bary_vnC = areaPAB / areaABC;
+
+    point inter_normal = (vnA * bary_vnA) + (vnB * bary_vnB) + (vnC * (1-bary_vnA-bary_vnB));
+    inter_normal = inter_normal / std::hypot(inter_normal.x, inter_normal.y, inter_normal.z);
+
+    return std::abs(dot_product(inter_normal, light_ray_vec));
+}
+
 
 std::pair<point, point> tree::unite(node *now, triangle trik)
 {
@@ -165,26 +203,27 @@ std::optional<triangle> tree::intersect(node *now, point start, point middle)
 }
 
 // return -2 if there is no intersect
-double tree::intersect(point start, point middle, point light)
+double tree::intersect(point camera, point plane_point, point light)
 {
     auto root_ptr = root.get();
     // insert into root
-    auto trik = intersect(root_ptr, start, middle);
+    auto start_intersected_triangle = intersect(root_ptr, camera, plane_point);
     // if there is no intersect triangle return -2
-    if (!trik.has_value()) return -2;
-    auto res = ::intersect(trik.value(), start, middle);
+    if (!start_intersected_triangle.has_value()) return -2;
+    auto res = ::intersect(start_intersected_triangle.value(), camera, plane_point);
     if (res.second == -2) return -2;
     // get point intersect
-    point inter = get_point_intersect(trik.value(), start, middle);
+    point intersection = get_point_intersect(start_intersected_triangle.value(), camera, plane_point);
     // get triangle where light will intersect out object
-    auto shade = intersect(root_ptr, light, inter);
+    auto shade = intersect(root_ptr, light, intersection);
     // if it will not intersect(the ray and triangle is parallel) or will intersect not in out point(so we are in shade)
     // that return dark color
     if (!shade.has_value()) return 0;
-    if (inter != get_point_intersect(shade.value(), light, inter)) return 0;
-    // otherwwise return sin of angle
-    return ::intersect(shade.value(), light, inter).second;
+    if (intersection != get_point_intersect(shade.value(), light, intersection)) return 0;
+    // otherwise return sin of angle
+    return ::computeBarycentricColor(start_intersected_triangle.value(), intersection, light);
 }
+
 
 void tree::insert(triangle new_elem)
 {

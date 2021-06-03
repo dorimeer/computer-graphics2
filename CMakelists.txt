@@ -11,5 +11,3 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 file(MAKE_DIRECTORY bin)
 
 add_subdirectory(src)
-
-target_link_libraries(${PROJECT_NAME} PUBLIC pthread)

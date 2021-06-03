@@ -16,6 +16,9 @@ bool operator!=(const point lhs, const point rhs);
 point operator-(point lhs, point rhs);
 point operator+(point lhs, point rhs);
 point operator*(point lhs, double rhs);
+point operator*(point lhs, point rhs);
+point operator/(point lhs, double rhs);
+point operator/(point lhs, point rhs);
 double dot_product(point lhs, point rhs);
 point cross_product(point lhs, point rhs);
 

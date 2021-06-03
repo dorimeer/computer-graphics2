@@ -36,3 +36,6 @@ build
 
 # output images
 *.bmp
+
+.idea
+cmake-build-debug
